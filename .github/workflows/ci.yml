@@ -51,8 +51,8 @@ jobs:
           - distro: ubuntu1604
           - distro: ubuntu1804
           - distro: ubuntu2004
-          - distro: centOS7
-          - distro: centOS8
+          - distro: centos7
+          - distro: centos8
 
     steps:
       - name: Check out the codebase
