@@ -17,7 +17,3 @@ provisioner:
     prepare: prepare.yml
     converge: converge.yml
     verify: verify.yml
-lint: |
-  set -e
-  yamllint .
-  ansible-lint
