@@ -212,7 +212,7 @@
     owner: root
     group: root
     mode: 0644
-    backup: "{{ postfix_recipient_canonical_backup | bool }}" 
+    backup: "{{ postfix_recipient_canonical_backup | bool }}"
   with_items: "{{ postfix_recipient_canonical_maps_file }}"
   notify:
     - Postmap recipient_canonical_maps
