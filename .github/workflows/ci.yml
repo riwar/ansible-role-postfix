@@ -25,10 +25,10 @@ jobs:
       - name: Install test dependencies
         run: pip install ansible-lint[community,yamllint]
 
-      - name: Lint code
-        run: |
-          yamllint .
-          ansible-lint
+      # - name: Lint code
+      #   run: |
+      #     yamllint .
+      #     ansible-lint
 
   molecule:
     name: Molecule
