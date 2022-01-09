@@ -1,8 +1,9 @@
 ---
 # Reference: https://stackoverflow.com/questions/29075287/ansible-insert-line-if-not-exists
-- name: Check whether alias is exists or not
-  command: "grep -c '{{ alias.user }}: {{ alias.alias }}' {{ postfix_aliases_file }} || true"
+- name: Check whether the alias is exists or not
+  command: "grep -c -E '{{ alias.user }}:\\s+' {{ postfix_aliases_file }} || true"
   register: alias_result
+  changed_when: not alias_result.stdout == '0'
   tags:
     - configuration
     - postfix
@@ -13,7 +14,7 @@
   lineinfile:
     path: "{{ postfix_aliases_file }}"
     line: "{{ alias.user }}: {{ alias.alias }}"
-    regexp: '^{{ alias.user | regex_escape }}:\s+{{ alias.alias | regex_escape }}'
+    regexp: '^{{ alias.user | regex_escape }}:\s+'
     create: yes
     backup: yes
     owner: root

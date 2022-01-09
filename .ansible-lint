@@ -4,3 +4,6 @@ warn_list:
   - '204'
   - '405'
   - '601'
+# To ignore package-latest(Package installs should not use latest).
+skip_list:
+  - '403'
