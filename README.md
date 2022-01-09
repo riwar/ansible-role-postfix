@@ -2,6 +2,8 @@
 
 Set up a postfix server in Debian-like systems and CentOS.
 
+It's forked from [ansible-postfix](https://github.com/Oefenweb/ansible-postfix).
+
 # Requirements
 
 None
