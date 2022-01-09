@@ -1,0 +1,311 @@
+---
+# Reference: https://github.com/Oefenweb/ansible-postfix
+- name: Set a variable to check whether docker guest or not
+  set_fact:
+    is_docker_guest: "{{ (ansible_virtualization_role | default('host') == 'guest') and (ansible_virtualization_type | default('none') == 'docker') }}"
+  tags:
+    - configuration
+    - postfix
+    - postfix-facts
+    - webserver
+
+- name: Update OS package caches for Debian
+  apt:
+    update_cache: yes
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - configuration
+    - package-update
+    - postfix
+    - postfix-update-packages
+    - webserver
+
+- name: Update OS package caches for CentOS
+  dnf:
+    update_cache: yes
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags:
+    - configuration
+    - package-update
+    - postfix
+    - postfix-update-packages
+    - webserver
+
+- name: Update OS packages
+  package:
+    name: '*'
+    state: latest
+  tags:
+    - configuration
+    - package-update
+    - postfix
+    - postfix-update-packages
+    - webserver
+
+- name: Install OS packages for Debian
+  package:
+    name: "{{ postfix_debian_install }}"
+    state: latest
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - configuration
+    - postfix
+    - postfix-install-packages
+    - webserver
+
+- name: Install OS packages for CentOS
+  package:
+    name: "{{ postfix_redhat_install }}"
+    state: latest
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags:
+    - configuration
+    - postfix
+    - postfix-install-packages
+    - webserver
+
+# This task is set only in Debian.
+# Other operating systems do not need this.
+- name: Configure mailname for Debian
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_mailname_backup | bool }}"
+  with_items: "{{ postfix_mailname_file }}"
+  when: ansible_facts['os_family'] == 'Debian'
+  notify: Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-mailname
+    - webserver
+
+- name: Update postfix configuration file
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_main_cf_backup | bool }}"
+  with_items: "{{ postfix_main_cf }}"
+  notify: Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-main-cf
+    - webserver
+
+- name: Configure sasl username and password
+  template:
+    src: "{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0600
+    backup: "{{ postfix_sasl_passwd_backup | bool }}"
+  with_items: "{{ postfix_sasl_passwd_file }}"
+  when:
+    - postfix_relayhost | length
+    - postfix_sasl_auth_enable | bool
+  no_log: "{{ not ansible_check_mode }}"
+  notify:
+    - Postmap sasl_passwd
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-sasl-passwd
+    - webserver
+
+- name: Configure aliases
+  include: aliases.yml
+  with_items: "{{ postfix_aliases }}"
+  loop_control:
+    loop_var: alias
+  notify:
+    - New aliases
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-aliases
+    - webserver
+
+- name: Check whether aliases.db exists
+  stat:
+    path: "{{ postfix_aliases_file }}.db"
+  register: _aliasesdb
+  changed_when: not _aliasesdb.stat.exists
+  when: postfix_default_database_type == 'hash'
+  notify:
+    - New aliases
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-aliases
+    - webserver
+
+- name: Configure virtual aliases
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_virtual_aliases_backup | bool }}"
+  with_items: "{{ postfix_virtual_aliases_file }}"
+  notify:
+    - New virtual aliases
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-virtual-aliases
+    - webserver
+
+# sender_canonical_maps is processed before canonical_maps.
+- name: Configure sender canonical maps
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_sender_canonical_bakcup | bool }}"
+  with_items: "{{ postfix_sender_canonical_maps_file }}"
+  notify:
+    - Postmap sender_canonical_maps
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-sender-canonical-maps
+    - webserver
+
+- name: Configure canonical maps
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_canonical_backup | bool }}"
+  with_items: "{{ postfix_canonical_maps_file }}"
+  notify:
+    - Postmap canonical_maps
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-canonical-maps
+    - webserver
+
+- name: Configure recipient canonical maps
+  template:
+    src: "{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_recipient_canonical_backup | bool }}" 
+  with_items: "{{ postfix_recipient_canonical_maps_file }}"
+  notify:
+    - Postmap recipient_canonical_maps
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-recipient-canonical-maps
+    - webserver
+
+- name: Configure transport maps
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_transport_backup | bool }}"
+  with_items: "{{ postfix_transport_maps_file }}"
+  notify:
+    - Postmap transport_maps
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-transport-maps
+    - webserver
+
+# Note: This feature is available in Postfix 2.3 and later.
+- name: Configure sender dependent relayhost maps
+  template:
+    src: "{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_sender_dependent_relayhost_backup | bool }}"
+  with_items: "{{ postfix_sender_dependent_relayhost_maps_file }}"
+  notify:
+    - Postmap sender_dependent_relayhost_maps
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-sender-dependent-relayhost-maps
+    - webserver
+
+- name: Configure generic table
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_smtp_generic_backup | bool }}"
+  with_items: "{{ postfix_smtp_generic_maps_file }}"
+  notify:
+    - Postmap generic
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-generic-table
+    - webserver
+
+- name: Configure header checks
+  template:
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ postfix_header_checks_backup | bool }}"
+  with_items: "{{ postfix_header_checks_file }}"
+  notify:
+    - Restart postfix
+  tags:
+    - configuration
+    - postfix
+    - postfix-configure-header-checks-table
+    - webserver
+
+# CentOS Stream 8 has a problem not to find the service postfix...
+# We skip this task when check mode...
+- name: Start and enable postfix service for Debian
+  systemd:
+    name: postfix
+    state: "{{ service_default_state | default('started') }}"
+    daemon_reload: yes
+    enabled: "{{ service_default_enabled | default(true) | bool }}"
+  when: (ansible_facts['os_family'] == 'Debian') or (ansible_facts['os_family'] == 'RedHat' and (not ansible_check_mode))
+  tags:
+    - configuration
+    - postfix
+    - postfix-start-enable-service
+    - webserver

@@ -1,0 +1,52 @@
+---
+- name: New aliases
+  command: newaliases
+  when: not postfix_default_database_type == 'regexp'
+
+- name: New virtual aliases
+  command: postmap {{ postfix_default_database_type }}:{{ postfix_virtual_aliases_file }}
+  when: not postfix_default_database_type == 'regexp'
+
+- name: Postmap sasl_passwd
+  command: postmap {{ postfix_default_database_type }}:{{ postfix_sasl_passwd_file }}
+  when: not postfix_default_database_type == 'regexp'
+
+- name: Postmap canonical_maps
+  command: postmap {{ postfix_canonical_maps_database_type }}:{{ postfix_canonical_maps_file }}
+  when: not postfix_canonical_maps_database_type == 'regexp'
+
+- name: Postmap sender_canonical_maps
+  command: postmap {{ postfix_sender_canonical_maps_database_type }}:{{ postfix_sender_canonical_maps_file }}
+  when: not postfix_sender_canonical_maps_database_type == 'regexp'
+
+- name: Postmap recipient_canonical_maps
+  command: postmap {{ postfix_recipient_canonical_maps_database_type }}:{{ postfix_recipient_canonical_maps_file }}
+  when: not postfix_recipient_canonical_maps_database_type == 'regexp'
+
+- name: Postmap transport_maps
+  command: postmap {{ postfix_transport_maps_database_type }}:{{ postfix_transport_maps_file }}
+  when: not postfix_transport_maps_database_type == 'regexp'
+
+- name: Postmap sender_dependent_relayhost_maps
+  command: postmap {{ postfix_default_database_type }}:{{ postfix_sender_dependent_relayhost_maps_file }}
+  when: not postfix_default_database_type == 'regexp'
+
+- name: Postmap generic
+  command: postmap {{ postfix_smtp_generic_maps_database_type }}:{{ postfix_smtp_generic_maps_file }}
+  when: not postfix_smtp_generic_maps_database_type == 'regexp'
+
+- name: Remove pid
+  file:
+    path: "~postfix/pid/master.pid"
+    state: absent
+  listen: Restart postfix
+  when: is_docker_guest
+
+- name: Restart service
+  service:
+    name: postfix
+    state: restarted
+  listen: Restart postfix
+  when: 
+    - service_default_state | default('started') == 'started'
+    - (ansible_facts['os_family'] == 'Debian') or (ansible_facts['os_family'] == 'RedHat' and (not ansible_check_mode))

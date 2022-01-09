@@ -1,0 +1,5 @@
+{{ ansible_managed | comment }}
+
+{% for canonical in postfix_recipient_canonical_maps %}
+{{ canonical.recipient }} {{ canonical.rewrite }}
+{% endfor %}

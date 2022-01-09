@@ -1,0 +1,5 @@
+{{ ansible_managed | comment }}
+
+{% for alias in postfix_virtual_aliases %}
+{{ alias.virtual }} {{ alias.alias }}
+{% endfor %}

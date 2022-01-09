@@ -1,0 +1,136 @@
+---
+postfix_debian_install:
+  - postfix
+  - mailutils
+  - libsasl2-2
+  - sasl2-bin
+  - libsasl2-modules
+
+postfix_redhat_install:
+  - postfix
+  - mailx
+  - cyrus-sasl
+  - cyrus-sasl-devel
+  - cyrus-sasl-plain
+  - cyrus-sasl-md5
+  - cyrus-sasl-sql
+
+# Not support FreeBSD yet...
+# postfix_freebsd_install:
+#   - postfix
+#   - postfix-sasl
+#   - cyrus-sasl
+#   - cyrus-sasl-sql
+
+postfix_hostname: "{{ ansible_fqdn }}"
+postfix_mailname: "{{ ansible_fqdn }}"
+postfix_mailname_backup: yes
+
+postfix_compatibility_level: 2
+postfix_main_cf_backup: yes
+
+postfix_default_database_type: hash
+
+postfix_aliases: []
+
+postfix_virtual_aliases: []
+postfix_virtual_aliases_backup: yes
+
+postfix_sender_canonical_maps: []
+postfix_sender_canonical_maps_database_type: "{{ postfix_default_database_type }}"
+postfix_sender_canonical_bakcup: yes
+
+postfix_canonical_maps: []
+postfix_canonical_maps_database_type: "{{ postfix_default_database_type }}"
+postfix_canonical_backup: yes
+
+postfix_recipient_canonical_maps: []
+postfix_recipient_canonical_maps_database_type: "{{ postfix_default_database_type }}"
+postfix_recipient_canonical_backup: yes
+
+postfix_transport_maps: []
+postfix_transport_maps_database_type: "{{ postfix_default_database_type }}"
+postfix_transport_backup: yes
+
+postfix_sender_dependent_relayhost_maps: []
+postfix_sender_dependent_relayhost_backup: yes
+
+postfix_header_checks: []
+postfix_header_checks_database_type: regexp
+postfix_header_checks_backup: yes
+
+postfix_generic: "{{ postfix_smtp_generic_maps }}"
+postfix_smtp_generic_maps: []
+postfix_smtp_generic_maps_database_type: "{{ postfix_default_database_type }}"
+postfix_smtp_generic_backup: yes
+
+postfix_relayhost: ''
+postfix_relayhost_mxlookup: false
+postfix_relayhost_port: 587
+postfix_relaytls: >-
+  {% if ansible_facts['os_family'] == 'Debian' %}
+  no
+  {% else %}
+  yes
+  {% endif %}
+
+postfix_sasl_passwd_backup: true
+postfix_sasl_auth_enable: true
+postfix_sasl_user: "postmaster@{{ ansible_domain }}"
+postfix_sasl_password: 'k8+haga4@#pR'
+postfix_sasl_security_options: noanonymous
+postfix_sasl_tls_security_options: noanonymous
+postfix_sasl_mechanism_filter: ''
+
+postfix_smtp_tls_ca_path: >-
+  {% if ansible_facts['os_family'] == 'Debian' %}
+  /etc/ssl/certs
+  {% else %}
+  /etc/pki/tls/certs
+  {% endif %}
+
+postfix_smtp_tls_security_level: >-
+  {% if ansible_facts['os_family'] == 'Debian' %}
+  encrypt
+  {% else %}
+  may
+  {% endif %}
+
+postfix_smtp_tls_wrappermode: false
+postfix_smtp_tls_note_starttls_offer: true
+
+postfix_inet_interfaces: all
+postfix_inet_protocols: all
+postfix_mydestination:
+  - "{{ postfix_hostname }}"
+  - localdomain
+  - localhost
+  - localhost.localdomain
+postfix_mynetworks:
+  - 127.0.0.0/8
+  - '[::ffff:127.0.0.0]/104'
+  - '[::1]/128'
+
+postfix_disable_vrfy_command: true
+postfix_message_size_limit: 10240000
+
+postfix_smtpd_tls_cert_file: >-
+  {% if ansible_facts['os_family'] == 'Debian' %}
+  /etc/ssl/certs/ssl-cert-snakeoil.pem
+  {% else %}
+  /etc/pki/tls/certs/postfix.pem
+  {% endif %}
+
+postfix_smtpd_tls_key_file: >-
+  {% if ansible_facts['os_family'] == 'Debian' %}
+  /etc/ssl/private/ssl-cert-snakeoil.key
+  {% else %}
+  /etc/pki/tls/private/postfix.key
+  {% endif %}
+
+postfix_smptd_relay_restrictions:
+  - permit_mynetworks
+  - permit_sasl_authenticated
+  - defer_unauth_destination
+
+postfix_raw_options: []
