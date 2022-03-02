@@ -6,7 +6,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-facts
+    - mail-facts
     - webserver
 
 - name: Update OS package caches for Debian
@@ -17,7 +19,9 @@
     - configuration
     - package-update
     - postfix
+    - mail
     - postfix-update-packages
+    - mail-update-packages
     - webserver
 
 - name: Update OS package caches for CentOS
@@ -28,7 +32,9 @@
     - configuration
     - package-update
     - postfix
+    - mail
     - postfix-update-packages
+    - mail-update-packages
     - webserver
 
 - name: Update OS packages
@@ -39,7 +45,9 @@
     - configuration
     - package-update
     - postfix
+    - mail
     - postfix-update-packages
+    - mail-update-packages
     - webserver
 
 - name: Install OS packages for Debian
@@ -50,7 +58,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-install-packages
+    - mail-install-packages
     - webserver
 
 - name: Install OS packages for CentOS
@@ -61,7 +71,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-install-packages
+    - mail-install-packages
     - webserver
 
 # This task is set only in Debian.
@@ -80,7 +92,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-mailname
+    - mail-configure-mailname
     - webserver
 
 - name: Update postfix configuration file
@@ -96,7 +110,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-main-cf
+    - mail-configure-main-cf
     - webserver
 
 - name: Configure sasl username and password
@@ -118,7 +134,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-sasl-passwd
+    - mail-configure-sasl-passwd
     - webserver
 
 - name: Configure aliases
@@ -132,7 +150,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-aliases
+    - mail-configure-aliases
     - webserver
 
 - name: Check whether aliases.db exists
@@ -147,7 +167,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-aliases
+    - mail-configure-virtual-aliases
     - webserver
 
 - name: Configure virtual aliases
@@ -165,7 +187,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-virtual-aliases
+    - mail-configure-virtual-aliases
     - webserver
 
 # sender_canonical_maps is processed before canonical_maps.
@@ -184,7 +208,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-sender-canonical-maps
+    - mail-configure-sender-canonical-maps
     - webserver
 
 - name: Configure canonical maps
@@ -202,7 +228,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-canonical-maps
+    - mail-configure-canonical-maps
     - webserver
 
 - name: Configure recipient canonical maps
@@ -220,7 +248,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-recipient-canonical-maps
+    - mail-configure-recipient-canonical-maps
     - webserver
 
 - name: Configure transport maps
@@ -238,7 +268,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-transport-maps
+    - mail-configure-transport-maps
     - webserver
 
 # Note: This feature is available in Postfix 2.3 and later.
@@ -257,7 +289,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-sender-dependent-relayhost-maps
+    - mail-configure-sender-dependent-relayhost-maps
     - webserver
 
 - name: Configure generic table
@@ -275,7 +309,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-generic-table
+    - mail-configure-generic-table
     - webserver
 
 - name: Configure header checks
@@ -292,7 +328,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-header-checks-table
+    - mail-configure-header-checks-table
     - webserver
 
 # CentOS Stream 8 has a problem not to find the service postfix...
@@ -307,5 +345,7 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-start-enable-service
+    - mail-start-enable-service
     - webserver

@@ -7,7 +7,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-aliases
+    - mail-configure-aliases
     - webserver
 
 - name: Replace the alias because this alias already exists
@@ -24,7 +26,9 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-aliases
+    - mail-configure-aliases
     - webserver
 
 - name: Insert a new alias because this alias does not exist
@@ -40,5 +44,7 @@
   tags:
     - configuration
     - postfix
+    - mail
     - postfix-configure-aliases
+    - mail-configure-aliases
     - webserver
