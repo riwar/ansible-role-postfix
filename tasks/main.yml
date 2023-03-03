@@ -140,7 +140,7 @@
     - webserver
 
 - name: Configure aliases
-  include: aliases.yml
+  include_tasks: aliases.yml
   with_items: "{{ postfix_aliases }}"
   loop_control:
     loop_var: alias
