@@ -1,5 +1,7 @@
 # Ansible Role For Postfix
 
+[![CI](https://github.com/Asya-kawai/ansible-role-postfix/actions/workflows/ci.yml/badge.svg)](https://github.com/Asya-kawai/ansible-role-postfix/actions/workflows?query=workflow%3ACI)
+
 Set up a postfix server in Debian-like systems and CentOS.
 
 It's forked from [ansible-postfix](https://github.com/Oefenweb/ansible-postfix).
