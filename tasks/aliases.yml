@@ -23,6 +23,9 @@
     group: root
     mode: 0644
   when: not alias_result.stdout == '0'
+  notify:
+    - New aliases
+    - Restart postfix
   tags:
     - configuration
     - postfix
@@ -41,6 +44,9 @@
     group: root
     mode: 0644
   when: alias_result.stdout == '0'
+  notify:
+    - New aliases
+    - Restart postfix
   tags:
     - configuration
     - postfix

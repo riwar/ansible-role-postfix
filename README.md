@@ -280,3 +280,13 @@ A simple example that shows how to add some raw config:
 # Feedback, bug-reports, requests, ...
 
 Are [welcome](https://github.com/Asya-kawai/ansible-role-postfix/issues)!
+
+# How to test
+
+Start VM instance kind of Ubuntu 18.04, Ubuntu 20.04, Ubuntu 22.04, CentOS7 and CentOS8 and
+run ansible-playbook command such as `ansible-playbook -i inventory -CD playbook.yml --private-key ~/.ssh/your_private_key --tags mail`.
+
+## Notes:
+
+* Not support CentOS9
+* We give up on using `molecule` because sometime molecule are broken and don't work correctly.

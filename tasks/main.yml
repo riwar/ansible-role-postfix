@@ -144,9 +144,6 @@
   with_items: "{{ postfix_aliases }}"
   loop_control:
     loop_var: alias
-  notify:
-    - New aliases
-    - Restart postfix
   tags:
     - configuration
     - postfix
