@@ -2,38 +2,56 @@
 - name: New aliases
   command: newaliases
   when: not postfix_default_database_type == 'regexp'
+  register: new_aliases
+  changed_when: new_aliases.rc != 0
 
 - name: New virtual aliases
   command: postmap {{ postfix_default_database_type }}:{{ postfix_virtual_aliases_file }}
   when: not postfix_default_database_type == 'regexp'
+  register: new_virtual_aliases
+  changed_when: new_virtual_aliases.rc != 0
 
 - name: Postmap sasl_passwd
   command: postmap {{ postfix_default_database_type }}:{{ postfix_sasl_passwd_file }}
   when: not postfix_default_database_type == 'regexp'
+  register: postmap_sasl_passwd
+  changed_when: postmap_sasl_passwd.rc != 0
 
 - name: Postmap canonical_maps
   command: postmap {{ postfix_canonical_maps_database_type }}:{{ postfix_canonical_maps_file }}
   when: not postfix_canonical_maps_database_type == 'regexp'
+  register: postmap_canonical_maps
+  changed_when: postmap_canonical_maps.rc != 0
 
 - name: Postmap sender_canonical_maps
   command: postmap {{ postfix_sender_canonical_maps_database_type }}:{{ postfix_sender_canonical_maps_file }}
   when: not postfix_sender_canonical_maps_database_type == 'regexp'
+  register: postmap_sender_canonical_maps
+  changed_when: postmap_sender_canonical_maps.rc != 0
 
 - name: Postmap recipient_canonical_maps
   command: postmap {{ postfix_recipient_canonical_maps_database_type }}:{{ postfix_recipient_canonical_maps_file }}
   when: not postfix_recipient_canonical_maps_database_type == 'regexp'
+  register: postmap_recipient_canonical_maps
+  changed_when: postmap_recipient_canonical_maps.rc != 0
 
 - name: Postmap transport_maps
   command: postmap {{ postfix_transport_maps_database_type }}:{{ postfix_transport_maps_file }}
   when: not postfix_transport_maps_database_type == 'regexp'
+  register: postmap_transport_maps
+  changed_when: postmap_transport_maps.rc != 0
 
 - name: Postmap sender_dependent_relayhost_maps
   command: postmap {{ postfix_default_database_type }}:{{ postfix_sender_dependent_relayhost_maps_file }}
   when: not postfix_default_database_type == 'regexp'
+  register: postmap_sender_dependent_relayhost_maps
+  changed_when: postmap_sender_dependent_relayhost_maps.rc != 0
 
 - name: Postmap generic
   command: postmap {{ postfix_smtp_generic_maps_database_type }}:{{ postfix_smtp_generic_maps_file }}
   when: not postfix_smtp_generic_maps_database_type == 'regexp'
+  register: postmap_generic
+  changed_when: postmap_generic.rc != 0
 
 - name: Remove pid
   file:
