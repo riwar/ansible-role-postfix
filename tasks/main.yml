@@ -23,6 +23,7 @@
     - postfix-update-packages
     - mail-update-packages
     - webserver
+    - never
 
 - name: Update OS package caches for CentOS
   dnf:
@@ -49,6 +50,7 @@
     - postfix-update-packages
     - mail-update-packages
     - webserver
+    - never
 
 - name: Install OS packages for Debian
   package:
